@@ -1,24 +1,28 @@
+library spaceinvaders;
 
-#import('dart:html');
-#source('Game.dart');
-#source('Player.dart');
-#source('Rocket.dart');
-#source('Enemy.dart');
-#source('EnemyRow.dart');
-#source('GameDrawer.dart');
-#source('Directions.dart');
-#source('ScreenObject.dart');
+import 'dart:async';
+import 'dart:html';
+import 'dart:math';
+
+part 'Game.dart';
+part 'Player.dart';
+part 'Rocket.dart';
+part 'Enemy.dart';
+part 'EnemyRow.dart';
+part 'GameDrawer.dart';
+part 'Directions.dart';
+part 'ScreenObject.dart';
 
 CanvasElement canvas;
 ButtonElement startButton, stopButton;
 Game game;
 
 void main() {
-  canvas = query('#canvas');
-  startButton = query('#start-button');
-  startButton.on.click.add(startGame);
-  stopButton = query('#stop-button');
-  stopButton.on.click.add(stopGame);
+  canvas = querySelector('#canvas');
+  startButton = querySelector('#start-button');
+  startButton.onClick.listen(startGame);
+  stopButton = querySelector('#stop-button');
+  stopButton.onClick.listen(stopGame);
 }
 
 void startGame(MouseEvent event) {
@@ -46,8 +50,8 @@ void stopGame(MouseEvent event) {
 void loadImages(List<String> sources, callback) {
   Map<String, ImageElement> images = new Map<String, ImageElement>();
   for (String source in sources) {
-    ImageElement img = new ImageElement('img/${source}.png');
-    img.on.load.add((event) {
+    ImageElement img = new ImageElement(src: 'img/${source}.png');
+    img.onLoad.listen((event) {
       images.putIfAbsent(source, () => img);
       if (images.length == sources.length)
         callback(images);

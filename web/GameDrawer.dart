@@ -1,3 +1,5 @@
+part of spaceinvaders;
+
 /**
  * 
  * Helper class for drawing things on the canvas.

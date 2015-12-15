@@ -1,0 +1,8 @@
+name: spaceinvaders
+version: 1.0.0
+description: Spaceinvaders game
+dependencies:
+  browser: any
+dev_dependencies:
+  runtime:
+    path: ../../../web_runtime

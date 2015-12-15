@@ -1,3 +1,5 @@
+part of spaceinvaders;
+
 /**
  * 
  * Class describing a human controlled player.

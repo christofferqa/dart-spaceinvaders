@@ -1,3 +1,4 @@
+part of spaceinvaders;
 
 /**
  * 
@@ -14,17 +15,17 @@ class ScreenObject {
   ScreenObject(this.context, this.x, this.y, this.size, this.image);
   
   /* Make the rocket appear in the middle (x-axis) of the object */
-  int get rocketCenterX() => x + (size/2).toInt() - (Rocket.SIZE/2).toInt();
+  int get rocketCenterX => x + (size/2).toInt() - (Rocket.SIZE/2).toInt();
   /* Make the rocket appear at the top of the object */
-  int get rocketTop() => y - Rocket.SIZE;
+  int get rocketTop => y - Rocket.SIZE;
   /* Make the rocket appear at the bottom of the object */
-  int get rocketBottom() => y + size + Rocket.SIZE;
+  int get rocketBottom => y + size + Rocket.SIZE;
   /* Check collision between a rocket and the object */
   bool checkCollision(Rocket r) => ((r.x >= x && r.x < x + size)
       && (r.y >= y && r.y < y + size));
   
   void draw() {
-    context.drawImage(image, x, y, size, size);
+    context.drawImage(image, x, y);
   }
   
   void updatePosition(int dx, int dy) {

@@ -1,3 +1,5 @@
+part of spaceinvaders;
+
 /**
  * 
  * Class describing a row of enemies. Responsible of keeping track
@@ -18,8 +20,8 @@ class EnemyRow {
     }
   }
   
-  void removeEnemy(Enemy e) => enemies.removeRange(enemies.indexOf(e), 1);
-  bool get empty() => enemies.isEmpty();
+  void removeEnemy(Enemy e) { int index = enemies.indexOf(e); enemies.removeRange(index, index+1); }
+  bool get empty => enemies.isEmpty;
   
   /** Updates all enemy positions */
   void updateEnemyPositions() {

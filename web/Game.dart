@@ -1,3 +1,5 @@
+part of spaceinvaders;
+
 /**
  * Author: Jimmy Pettersson.
  * 
@@ -14,20 +16,22 @@ class Game {
   Player player;
   List<Rocket> playerRockets, enemyRockets;
   List<EnemyRow> enemyRows;
-  int score, level, tickId, movePlayerId, moveEnemyDownId, actionFlag;
+  int score, level, actionFlag;
+  Timer tickId, movePlayerId, moveEnemyDownId;
+  Random random = new Random();
   static ImageElement playerImage, enemyImage, rocketImage;
   
-  static final int WIDTH = 800;
-  static final int HEIGHT = 800;
-  static final int LEFT = 37;
-  static final int RIGHT = 39;
-  static final int FIRE = 32;
-  static final int NONE = 0;
-  static final int DELAY = 20; // 50fps
-  static final int MOVE_DOWN_DELAY = 100;
+  static const int WIDTH = 800;
+  static const int HEIGHT = 800;
+  static const int LEFT = 37;
+  static const int RIGHT = 39;
+  static const int FIRE = 32;
+  static const int NONE = 0;
+  static const int DELAY = 20; // 50fps
+  static const int MOVE_DOWN_DELAY = 100;
   
   Game(CanvasElement canvas, ImageElement playerImage, ImageElement enemyImage, ImageElement rocketImage) {
-    context = canvas.context2d;
+    context = canvas.context2D;
     Game.playerImage = playerImage;
     Game.enemyImage = enemyImage;
     Game.rocketImage = rocketImage;
@@ -37,8 +41,8 @@ class Game {
     player = new Player(context);
     score = 0;
     level = 1;
-    window.on.keyDown.add(handleKeyDown);
-    window.on.keyUp.add(handleKeyUp);
+    window.onKeyDown.listen(handleKeyDown);
+    window.onKeyUp.listen(handleKeyUp);
   }
   
   /** Sets up the initial game state and draws the game board. */
@@ -73,10 +77,10 @@ class Game {
   
   /** Starts the game by starting the different timers. */
   void start() {
-    tickId = window.setInterval(tick, DELAY);
-    movePlayerId = window.setInterval(movePlayer, DELAY);
+    tickId = new Timer.periodic(const Duration(milliseconds: DELAY), (_) => tick());
+    movePlayerId = new Timer.periodic(const Duration(milliseconds: DELAY), (_) => movePlayer());
     int moveDelay = MOVE_DOWN_DELAY - 5 * level;
-    moveEnemyDownId = window.setInterval(moveEnemyDown, moveDelay);
+    moveEnemyDownId = new Timer.periodic(new Duration(milliseconds: moveDelay), (_) => moveEnemyDown());
   }
   
   /** Stops the current game. */
@@ -99,14 +103,20 @@ class Game {
   
   /** Updates the positions on all rockets in play. */
   void updateRocketPositions() {
-    for (Rocket r in playerRockets) {
+    for (Rocket r in playerRockets.toList()) {
       r.updatePosition(0, Directions.UP * Rocket.DY);
-      if (r.invalid) playerRockets.removeRange(playerRockets.indexOf(r), 1);
+      if (r.invalid) {
+        int index = playerRockets.indexOf(r);
+        playerRockets.removeRange(index, index+1);
+      }
     }
     
-    for (Rocket r in enemyRockets) {
+    for (Rocket r in enemyRockets.toList()) {
       r.updatePosition(0, Directions.DOWN * Rocket.DY);
-      if (r.invalid) enemyRockets.removeRange(enemyRockets.indexOf(r), 1);
+      if (r.invalid) {
+        int index = enemyRockets.indexOf(r);
+        enemyRockets.removeRange(index, index+1);
+      }
     } 
   }
   
@@ -121,16 +131,20 @@ class Game {
   /** Collision detection between rockets and enemies/player. */
   void checkCollisions() {
     /* Player rockets hitting enemies */
-    for (EnemyRow er in enemyRows) {
-      for (Enemy e in er.enemies) {
-        for (Rocket r in playerRockets) {
+    for (EnemyRow er in enemyRows.toList()) {
+      for (Enemy e in er.enemies.toList()) {
+        for (Rocket r in playerRockets.toList()) {
           if (e.checkCollision(r)) {
             score++;
-            playerRockets.removeRange(playerRockets.indexOf(r), 1);
+            int index = playerRockets.indexOf(r);
+            playerRockets.removeRange(index, index+1);
             er.removeEnemy(e);
-            if (er.empty) enemyRows.removeRange(enemyRows.indexOf(er), 1);
+            if (er.empty) {
+              int index = enemyRows.indexOf(er);
+              enemyRows.removeRange(index, index+1);
+            }
             
-            if (enemyRows.isEmpty()) advanceLevel();
+            if (enemyRows.isEmpty) advanceLevel();
             
             // This enemy has already been hit by a rocket, no need to loop over the rest.
             break;
@@ -164,9 +178,9 @@ class Game {
     }
     
     /* Fire rockets at random on this timer */
-    if (enemyRockets.length < 3 && Math.random() > 0.95) {
-      EnemyRow er = enemyRows[(Math.random() * enemyRows.length).toInt()];
-      Enemy e = er.enemies[(Math.random() * er.enemies.length).toInt()];
+    if (enemyRockets.length < 3 && random.nextDouble() > 0.95) {
+      EnemyRow er = enemyRows[(random.nextDouble() * enemyRows.length).toInt()];
+      Enemy e = er.enemies[(random.nextDouble() * er.enemies.length).toInt()];
       enemyRockets.add(new Rocket(context, e.rocketCenterX, e.rocketBottom));
     }
   }
@@ -184,9 +198,9 @@ class Game {
   
   /** Clear all timers */
   void clearIntervals() {
-    window.clearInterval(tickId);
-    window.clearInterval(movePlayerId);
-    window.clearInterval(moveEnemyDownId); 
+    tickId.cancel();
+    movePlayerId.cancel();
+    moveEnemyDownId.cancel();
   }
   
   /** Draws the background gradient, the score and level texts and the bottom line */

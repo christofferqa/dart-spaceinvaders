@@ -1,3 +1,5 @@
+part of spaceinvaders;
+
 /**
  * 
  * Class represeting a single Enemy
@@ -20,7 +22,7 @@ class Enemy extends ScreenObject {
     draw();
   }
   
-  bool get atBottom() => y > 700;
+  bool get atBottom => y > 700;
   
   /** Check for direction change before calling super class */
   void updatePosition(int dx, int dy) {

@@ -1,3 +1,5 @@
+part of spaceinvaders;
+
 /**
  * 
  * Class describing a Rocket
@@ -15,6 +17,6 @@ class Rocket extends ScreenObject {
   }
   
   /* Rocket is out of bounds */
-  bool get invalid() => y < 0 || y > Game.HEIGHT;
+  bool get invalid => y < 0 || y > Game.HEIGHT;
   
 }
